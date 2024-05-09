@@ -86,7 +86,7 @@ class EasyDayWidget extends StatelessWidget {
       child: AnimatedContainer(
         duration: EasyConstants.animationDuration,
         width: width,
-        height: height,
+        height: height - 20,
         margin: margin,
         decoration: dayDecoration,
         child: _buildDayStructure(

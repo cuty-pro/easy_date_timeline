@@ -1,13 +1,20 @@
+import 'dart:collection';
+
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 
-import '../../properties/properties.dart';
 import '../../utils/utils.dart';
 import '../../widgets/easy_day_widget/easy_day_widget.dart';
 import 'web_scroll_behavior.dart';
 
 part 'easy_infinite_date_timeline_controller.dart';
 
-class InfiniteTimeLineWidget extends StatefulWidget {
+typedef MarkerBuilder<T> = Widget Function(
+    BuildContext context, DateTime day, List<T> events);
+
+typedef Markers<T> = LinkedHashMap<DateTime, List<T>>;
+
+class InfiniteTimeLineWidget<T> extends StatefulWidget {
   InfiniteTimeLineWidget({
     super.key,
     this.inactiveDates,
@@ -24,6 +31,8 @@ class InfiniteTimeLineWidget extends StatefulWidget {
     required this.activeDayColor,
     required this.lastDate,
     required this.selectionMode,
+    this.markerBuilder,
+    this.markers,
   })  : assert(timeLineProps.hPadding > -1,
             "Can't set timeline hPadding less than zero."),
         assert(timeLineProps.separatorPadding > -1,
@@ -97,11 +106,16 @@ class InfiniteTimeLineWidget extends StatefulWidget {
 
   final ScrollPhysics? physics;
 
+  final Markers<T>? markers;
+
+  final MarkerBuilder<T>? markerBuilder;
+
   @override
-  State<InfiniteTimeLineWidget> createState() => _InfiniteTimeLineWidgetState();
+  State<InfiniteTimeLineWidget<T>> createState() =>
+      _InfiniteTimeLineWidgetState<T>();
 }
 
-class _InfiniteTimeLineWidgetState extends State<InfiniteTimeLineWidget> {
+class _InfiniteTimeLineWidgetState<T> extends State<InfiniteTimeLineWidget<T>> {
   /// Returns the [EasyDayProps] associated with the widget.
   EasyDayProps get _dayProps => widget.dayProps;
 
@@ -149,7 +163,7 @@ class _InfiniteTimeLineWidgetState extends State<InfiniteTimeLineWidget> {
   }
 
   @override
-  void didUpdateWidget(covariant InfiniteTimeLineWidget oldWidget) {
+  void didUpdateWidget(covariant InfiniteTimeLineWidget<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
       _attachEasyController();
@@ -235,28 +249,33 @@ class _InfiniteTimeLineWidgetState extends State<InfiniteTimeLineWidget> {
                       }
                     }
                   }
+                  final List<T> events = (widget.markers?[currentDate] ?? []);
                   return Padding(
                     key: ValueKey<DateTime>(currentDate),
                     padding: EdgeInsetsDirectional.only(
                       end: _timeLineProps.separatorPadding,
                     ),
-                    child: widget.itemBuilder != null
-                        ? _dayItemBuilder(
-                            context,
-                            isSelected,
-                            currentDate,
-                          )
-                        : EasyDayWidget(
-                            easyDayProps: _dayProps,
-                            date: currentDate,
-                            locale: widget.locale,
-                            isSelected: isSelected,
-                            isDisabled: isDisabledDay,
-                            onDayPressed: () =>
-                                _onDayChanged(isSelected, currentDate),
-                            activeTextColor: widget.activeDayTextColor,
-                            activeDayColor: widget.activeDayColor,
-                          ),
+                    child: Column(
+                      children: [
+                        EasyDayWidget(
+                          easyDayProps: _dayProps,
+                          date: currentDate,
+                          locale: widget.locale,
+                          isSelected: isSelected,
+                          isDisabled: isDisabledDay,
+                          onDayPressed: () =>
+                              _onDayChanged(isSelected, currentDate),
+                          activeTextColor: widget.activeDayTextColor,
+                          activeDayColor: widget.activeDayColor,
+                        ),
+                        if (widget.markerBuilder != null &&
+                            events.isNotEmpty) ...[
+                          const SizedBox(height: 5),
+                          widget.markerBuilder!
+                              .call(context, currentDate, events)
+                        ],
+                      ],
+                    ),
                   );
                 },
                 itemCount: _daysCount,

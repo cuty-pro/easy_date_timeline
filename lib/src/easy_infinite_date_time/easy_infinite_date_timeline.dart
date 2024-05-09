@@ -6,7 +6,7 @@ import '../utils/utils.dart';
 import 'widgets/easy_infinite_header.dart';
 import 'widgets/infinite_time_line_widget.dart';
 
-class EasyInfiniteDateTimeLine extends StatefulWidget {
+class EasyInfiniteDateTimeLine<T> extends StatefulWidget {
   /// A widget that displays an infinite date timeline.
   ///
   /// The timeline widget allows users to scroll through a range of dates and select a specific date.
@@ -66,6 +66,8 @@ class EasyInfiniteDateTimeLine extends StatefulWidget {
     required this.firstDate,
     required this.focusDate,
     required this.lastDate,
+    this.markers,
+    this.markerBuilder,
   });
 
   /// Represents the initial date for the timeline widget.
@@ -148,12 +150,17 @@ class EasyInfiniteDateTimeLine extends StatefulWidget {
 
   final ScrollPhysics? physics;
 
+  final Markers<T>? markers;
+
+  final MarkerBuilder<T>? markerBuilder;
+
   @override
-  State<EasyInfiniteDateTimeLine> createState() =>
-      _EasyInfiniteDateTimeLineState();
+  State<EasyInfiniteDateTimeLine<T>> createState() =>
+      _EasyInfiniteDateTimeLineState<T>();
 }
 
-class _EasyInfiniteDateTimeLineState extends State<EasyInfiniteDateTimeLine> {
+class _EasyInfiniteDateTimeLineState<T>
+    extends State<EasyInfiniteDateTimeLine<T>> {
   @override
   void initState() {
     initializeDateFormatting(widget.locale, null);
@@ -196,7 +203,7 @@ class _EasyInfiniteDateTimeLineState extends State<EasyInfiniteDateTimeLine> {
           const SizedBox(
             height: 12.0,
           ),
-        InfiniteTimeLineWidget(
+        InfiniteTimeLineWidget<T>(
           controller: widget.controller,
           firstDate: widget.firstDate,
           lastDate: widget.lastDate,
@@ -211,6 +218,8 @@ class _EasyInfiniteDateTimeLineState extends State<EasyInfiniteDateTimeLine> {
           locale: widget.locale,
           selectionMode: widget.selectionMode,
           physics: widget.physics,
+          markers: widget.markers,
+          markerBuilder: widget.markerBuilder,
         )
       ],
     );
