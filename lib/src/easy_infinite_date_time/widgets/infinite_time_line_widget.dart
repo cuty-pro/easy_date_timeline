@@ -34,6 +34,7 @@ class InfiniteTimeLineWidget<T> extends StatefulWidget {
     this.markerBuilder,
     this.markers,
     this.weekends = const [],
+    this.onDayAppearInScroll,
   })  : assert(timeLineProps.hPadding > -1,
             "Can't set timeline hPadding less than zero."),
         assert(timeLineProps.separatorPadding > -1,
@@ -113,6 +114,8 @@ class InfiniteTimeLineWidget<T> extends StatefulWidget {
 
   final List<DateTime> weekends;
 
+  final Function(DateTime day)? onDayAppearInScroll;
+
   @override
   State<InfiniteTimeLineWidget<T>> createState() =>
       _InfiniteTimeLineWidgetState<T>();
@@ -156,6 +159,14 @@ class _InfiniteTimeLineWidgetState<T> extends State<InfiniteTimeLineWidget<T>> {
         EasyDateUtils.calculateDaysCount(widget.firstDate, widget.lastDate);
     _controller = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToInitialOffset());
+    _controller.addListener(() {
+      final day = calculateDateFromOffset(
+        firstDate: widget.firstDate,
+        dayWidth: _itemExtend,
+        controller: _controller,
+      );
+      widget.onDayAppearInScroll?.call(day);
+    });
   }
 
   void _jumpToInitialOffset() {
@@ -252,6 +263,20 @@ class _InfiniteTimeLineWidgetState<T> extends State<InfiniteTimeLineWidget<T>> {
                       }
                     }
                   }
+
+                  final now = DateTime.now();
+                  final dayNow = DateTime(now.year, now.month, now.day);
+                  final dayCurrent = DateTime(
+                      currentDate.year, currentDate.month, currentDate.day);
+
+                  final isWeekendOrCompleted = dayNow.isAfter(dayCurrent) ||
+                      widget.weekends
+                          .where((e) =>
+                              e.year == currentDate.year &&
+                              e.month == currentDate.month &&
+                              e.day == currentDate.day)
+                          .isNotEmpty;
+
                   final List<T> events = (widget.markers?[currentDate] ?? []);
                   return Padding(
                     key: ValueKey<DateTime>(currentDate),
@@ -270,12 +295,7 @@ class _InfiniteTimeLineWidgetState<T> extends State<InfiniteTimeLineWidget<T>> {
                               _onDayChanged(isSelected, currentDate),
                           activeTextColor: widget.activeDayTextColor,
                           activeDayColor: widget.activeDayColor,
-                          weekend: widget.weekends
-                              .where((e) =>
-                                  e.year == currentDate.year &&
-                                  e.month == currentDate.month &&
-                                  e.day == currentDate.day)
-                              .isNotEmpty,
+                          weekend: isWeekendOrCompleted,
                         ),
                         if (widget.markerBuilder != null &&
                             events.isNotEmpty) ...[

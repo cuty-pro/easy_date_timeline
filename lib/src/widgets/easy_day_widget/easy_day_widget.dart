@@ -86,8 +86,9 @@ class EasyDayWidget extends StatelessWidget {
       onTap: isDisabled ? null : onDayPressed,
       //borderRadius: _dayBorderRadius(isToday),
       borderRadius: _daySplashBorderRadius(isToday),
-      child: Opacity(
-        opacity: weekend ? 0.6 : 1,
+      child: AnimatedOpacity(
+        duration: EasyConstants.animationDuration,
+        opacity: weekend ? 0.7 : 1,
         child: AnimatedContainer(
           duration: EasyConstants.animationDuration,
           width: width,

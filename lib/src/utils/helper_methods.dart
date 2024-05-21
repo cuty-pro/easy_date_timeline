@@ -85,3 +85,30 @@ double calculateDateOffsetForCenter({
     return targetScrollPosition <= 0.0 ? 0.0 : maxScrollExtent;
   }
 }
+
+/// Calculates the date that corresponds to the current offset on the timeline.
+///
+/// Parameters:
+/// - [firstDate]: The start date of the timeline.
+/// - [dayWidth]: The width of each day on the timeline.
+/// - [controller]: The scroll controller of the timeline.
+///
+/// Returns: The date corresponding to the current scroll position.
+DateTime calculateDateFromOffset({
+  required DateTime firstDate, // The start date of the timeline.
+  required double dayWidth, // The width of each day on the timeline.
+  required ScrollController
+      controller, // The scroll controller of the timeline.
+}) {
+  // Get the current scroll offset
+  final currentOffset = controller.offset;
+
+  // Calculate the number of days passed since the first date based on the current scroll offset
+  final dayIndex = (currentOffset / dayWidth).round();
+
+  // Calculate the current date by adding the number of days to the first date
+  final currentDate = firstDate.add(Duration(days: dayIndex));
+
+  // Return the current date
+  return currentDate;
+}
