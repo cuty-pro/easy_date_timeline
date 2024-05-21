@@ -171,6 +171,7 @@ class _TimeLineWidgetState extends State<TimeLineWidget> {
                           _onDayChanged(isSelected, currentDate),
                       activeTextColor: widget.activeDayTextColor,
                       activeDayColor: widget.activeDayColor,
+                      weekend: false,
                     );
             },
             separatorBuilder: (context, index) {

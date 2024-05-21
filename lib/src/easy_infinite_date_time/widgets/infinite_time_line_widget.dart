@@ -33,6 +33,7 @@ class InfiniteTimeLineWidget<T> extends StatefulWidget {
     required this.selectionMode,
     this.markerBuilder,
     this.markers,
+    this.weekends = const [],
   })  : assert(timeLineProps.hPadding > -1,
             "Can't set timeline hPadding less than zero."),
         assert(timeLineProps.separatorPadding > -1,
@@ -109,6 +110,8 @@ class InfiniteTimeLineWidget<T> extends StatefulWidget {
   final Markers<T>? markers;
 
   final MarkerBuilder<T>? markerBuilder;
+
+  final List<DateTime> weekends;
 
   @override
   State<InfiniteTimeLineWidget<T>> createState() =>
@@ -267,6 +270,12 @@ class _InfiniteTimeLineWidgetState<T> extends State<InfiniteTimeLineWidget<T>> {
                               _onDayChanged(isSelected, currentDate),
                           activeTextColor: widget.activeDayTextColor,
                           activeDayColor: widget.activeDayColor,
+                          weekend: widget.weekends
+                              .where((e) =>
+                                  e.year == currentDate.year &&
+                                  e.month == currentDate.month &&
+                                  e.day == currentDate.day)
+                              .isNotEmpty,
                         ),
                         if (widget.markerBuilder != null &&
                             events.isNotEmpty) ...[

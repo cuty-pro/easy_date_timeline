@@ -17,6 +17,7 @@ class EasyDayWidget extends StatelessWidget {
     required this.activeTextColor,
     required this.activeDayColor,
     this.margin,
+    this.weekend = false,
   });
 
   /// Contains properties for configuring the appearance and behavior of the day widget.
@@ -44,6 +45,8 @@ class EasyDayWidget extends StatelessWidget {
   final Color activeDayColor;
 
   final EdgeInsetsGeometry? margin;
+
+  final bool weekend;
 
   // Get the inactive day properties from the EasyDayProps object.
   DayStyle get _inactiveDayStyle => easyDayProps.inactiveDayStyle;
@@ -83,16 +86,19 @@ class EasyDayWidget extends StatelessWidget {
       onTap: isDisabled ? null : onDayPressed,
       //borderRadius: _dayBorderRadius(isToday),
       borderRadius: _daySplashBorderRadius(isToday),
-      child: AnimatedContainer(
-        duration: EasyConstants.animationDuration,
-        width: width,
-        height: height - 20,
-        margin: margin,
-        decoration: dayDecoration,
-        child: _buildDayStructure(
-          structure: easyDayProps.dayStructure,
-          isLandScape: isLandScapeMode,
-          isToday: isToday,
+      child: Opacity(
+        opacity: weekend ? 0.6 : 1,
+        child: AnimatedContainer(
+          duration: EasyConstants.animationDuration,
+          width: width,
+          height: height - 20,
+          margin: margin,
+          decoration: dayDecoration,
+          child: _buildDayStructure(
+            structure: easyDayProps.dayStructure,
+            isLandScape: isLandScapeMode,
+            isToday: isToday,
+          ),
         ),
       ),
     );

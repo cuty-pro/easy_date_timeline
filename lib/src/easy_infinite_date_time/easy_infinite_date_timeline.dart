@@ -68,6 +68,7 @@ class EasyInfiniteDateTimeLine<T> extends StatefulWidget {
     required this.lastDate,
     this.markers,
     this.markerBuilder,
+    this.weekends = const [],
   });
 
   /// Represents the initial date for the timeline widget.
@@ -154,6 +155,8 @@ class EasyInfiniteDateTimeLine<T> extends StatefulWidget {
 
   final MarkerBuilder<T>? markerBuilder;
 
+  final List<DateTime> weekends;
+
   @override
   State<EasyInfiniteDateTimeLine<T>> createState() =>
       _EasyInfiniteDateTimeLineState<T>();
@@ -220,6 +223,7 @@ class _EasyInfiniteDateTimeLineState<T>
           physics: widget.physics,
           markers: widget.markers,
           markerBuilder: widget.markerBuilder,
+          weekends: widget.weekends,
         )
       ],
     );
