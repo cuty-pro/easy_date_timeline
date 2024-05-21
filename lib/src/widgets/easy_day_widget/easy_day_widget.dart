@@ -88,13 +88,16 @@ class EasyDayWidget extends StatelessWidget {
       borderRadius: _daySplashBorderRadius(isToday),
       child: AnimatedOpacity(
         duration: EasyConstants.animationDuration,
-        opacity: weekend ? 0.7 : 1,
+        opacity: weekend ? 1 : 1,
         child: AnimatedContainer(
           duration: EasyConstants.animationDuration,
           width: width,
           height: height - 20,
           margin: margin,
-          decoration: dayDecoration,
+          decoration: dayDecoration.copyWith(
+            color: weekend ? Theme.of(context).scaffoldBackgroundColor : null,
+            boxShadow: weekend ? [] : null,
+          ),
           child: _buildDayStructure(
             structure: easyDayProps.dayStructure,
             isLandScape: isLandScapeMode,
